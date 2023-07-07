@@ -1,0 +1,34 @@
+services:
+  link-wiz-db:
+    container_name: link-wiz-db
+    image: 'mongo:latest'
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+    networks:
+      - linkwix-network
+
+  linkwiz-nest:
+    container_name: linkwiz-nest
+    build:
+      context: .
+      dockerfile: ./.docker/Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - link-wiz-db
+    restart: unless-stopped
+    networks:
+      - linkwix-network
+    environment:
+      - MONGO_URL=mongodb://link-wiz-db/linkwiz
+    volumes:
+      - .:/home/node/app
+    entrypoint: ./.docker/entrypoint.sh
+
+volumes:
+  mongodb_data_container:
+
+networks:
+  linkwix-network:
