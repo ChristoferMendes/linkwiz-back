@@ -74,7 +74,7 @@ export class UrlService {
     }
 
     const weeks: WeekStats[] = [];
-    let currentWeekStart = startOfMonth.clone().startOf('isoWeek');
+    const currentWeekStart = startOfMonth.clone().startOf('isoWeek');
     let weekContinues = currentWeekStart.isSameOrBefore(endOfMonth);
 
     while (weekContinues) {
