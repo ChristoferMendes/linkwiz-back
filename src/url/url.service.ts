@@ -17,6 +17,28 @@ export class UrlService {
 
   constructor(@InjectModel(Url.name) private urlModel: Model<UrlDocument>) {}
 
+  async getFavIcon(domain: string) {
+    const url = `https://www.google.com/s2/favicons?domain=${domain}`;
+
+    const favIconImageResponse = await fetch(url);
+
+    const favIconBuffer = Buffer.from(await favIconImageResponse.arrayBuffer());
+
+    const base64 = favIconBuffer.toString('base64');
+
+    const base64Formatted = `data:image/png;base64,${base64}`;
+
+    return {
+      favIcon: base64Formatted,
+    };
+  }
+
+  async findAllByIds(ids: string[]) {
+    const urls = await this.urlModel.find({ _id: { $in: ids } });
+
+    return urls;
+  }
+
   async create(createShortUrlDto: CreateShortUrlDto) {
     const { url } = createShortUrlDto;
 
@@ -30,7 +52,7 @@ export class UrlService {
     const createdUrl = new this.urlModel({ fullUrl: url, shortUrl });
     await createdUrl.save();
 
-    return createdUrl.shortUrl;
+    return createdUrl;
   }
 
   async find(shortUrl: string) {
